@@ -1,4 +1,39 @@
-With dose_flags AS (
+ WITH daily_dose AS (
+    SELECT
+        patient_id,
+        service_date,
+        SUM(vials) AS total_vials
+     FROM  `peerless-summit-311611.peerless.patient`
+    GROUP BY patient_id, service_date
+)
+,dose_events AS (
+    SELECT
+        patient_id,
+        service_date,
+        total_vials,
+
+        LAG(service_date) OVER (
+            PARTITION BY patient_id
+            ORDER BY service_date
+        ) AS prev_service_date,
+
+        LAG(total_vials) OVER (
+            PARTITION BY patient_id
+            ORDER BY service_date
+        ) AS prev_vials,
+
+        DATE_DIFF(
+            service_date,
+            LAG(service_date) OVER (
+                PARTITION BY patient_id
+                ORDER BY service_date
+            ),
+            DAY
+        ) AS gap_days
+    FROM daily_dose
+)
+
+,dose_flags AS (
     SELECT
         patient_id,
         service_date,
@@ -18,3 +53,6 @@ With dose_flags AS (
         END AS dose_skip
     FROM dose_events
 )
+
+SELECT *
+FROM dose_flags;
