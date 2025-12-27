@@ -6,3 +6,5 @@
      FROM  `peerless-summit-311611.peerless.patient`
     GROUP BY patient_id, service_date
 )
+SELECT * 
+FROM daily_dose;
