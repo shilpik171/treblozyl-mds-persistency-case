@@ -1,4 +1,12 @@
-WITH dose_events AS (
+ WITH daily_dose AS (
+    SELECT
+        patient_id,
+        service_date,
+        SUM(vials) AS total_vials
+     FROM  `peerless-summit-311611.peerless.patient`
+    GROUP BY patient_id, service_date
+)
+,dose_events AS (
     SELECT
         patient_id,
         service_date,
@@ -24,3 +32,6 @@ WITH dose_events AS (
         ) AS gap_days
     FROM daily_dose
 )
+
+SELECT *
+FROM dose_events;
