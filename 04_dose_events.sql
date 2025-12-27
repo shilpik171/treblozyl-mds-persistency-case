@@ -1,4 +1,4 @@
-wITH dose_events AS (
+WITH dose_events AS (
     SELECT
         patient_id,
         service_date,
